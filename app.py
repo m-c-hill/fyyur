@@ -21,56 +21,10 @@ app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object("config")
 db = SQLAlchemy(app)
-# db.create_all()
+from models import Artist, Venue, Show
+
+db.create_all()
 migrate = Migrate(app, db)
-
-# ====================
-#  Models
-# ====================
-
-
-class Artist(db.Model):
-    __tablename__ = "artist"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(240))
-    website_link = db.Column(db.String(240))
-    seeking_venue = db.Column(db.Boolean)
-    seeking_description = db.Column(db.String(500))
-
-
-class Venue(db.Model):
-    __tablename__ = "venue"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    genres = db.Column(db.String(250))
-    facebook_link = db.Column(db.String(120))
-    website_link = db.Column(db.String(500))
-    seeking_talent = db.Column(db.Boolean)
-    seeking_description = db.Column(db.String(500))
-
-
-class Show(db.Model):
-    __tablename__ = "show"
-
-    id = db.Column(db.Integer, primary_key=True)
-    start_time = db.Column(db.DateTime)
-    artist_id = db.Column(db.Integer, db.ForeignKey("artist.id"), nullable=False)
-    artist = db.relationship("Artist", backref="artist")
-    venue_id = db.Column(db.Integer, db.ForeignKey("venue.id"), nullable=False)
-    venue = db.relationship("Venue", backref="venue")
 
 
 # ====================
@@ -88,6 +42,7 @@ def format_datetime(value, format="medium"):
 
 
 app.jinja_env.filters["datetime"] = format_datetime
+
 
 # ====================
 #  Controllers
@@ -292,6 +247,8 @@ def delete_venue(venue_id):
 # ====================
 #  Artists
 # ====================
+
+
 @app.route("/artists")
 def artists():
     # TODO: replace with real data returned from querying the database
@@ -424,6 +381,8 @@ def show_artist(artist_id):
 # ====================
 #  Update
 # ====================
+
+
 @app.route("/artists/<int:artist_id>/edit", methods=["GET"])
 def edit_artist(artist_id):
     form = ArtistForm()
@@ -576,6 +535,11 @@ def create_show_submission():
     # e.g., flash('An error occurred. Show could not be listed.')
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     return render_template("pages/home.html")
+
+
+# ============================
+#  Error Handling and Logging
+# ============================
 
 
 @app.errorhandler(404)
