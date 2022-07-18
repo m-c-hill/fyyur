@@ -1,51 +1,36 @@
-# ----------------------------------------------------------------------------#
-# Imports
-# ----------------------------------------------------------------------------#
-
 import json
 import dateutil.parser
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
-from forms import *
+from pkg_resources import require
+from forms import ShowForm, ArtistForm, VenueForm
 
-# ----------------------------------------------------------------------------#
-# App Config.
-# ----------------------------------------------------------------------------#
+
+# ====================
+#  App Config
+# ====================
+
 
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object("config")
 db = SQLAlchemy(app)
+# db.create_all()
+migrate = Migrate(app, db)
 
-# TODO: connect to a local postgresql database
-
-# ----------------------------------------------------------------------------#
-# Models.
-# ----------------------------------------------------------------------------#
-
-
-class Venue(db.Model):
-    __tablename__ = "Venue"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+# ====================
+#  Models
+# ====================
 
 
 class Artist(db.Model):
-    __tablename__ = "Artist"
+    __tablename__ = "artist"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -54,16 +39,43 @@ class Artist(db.Model):
     phone = db.Column(db.String(120))
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
+    facebook_link = db.Column(db.String(240))
+    website_link = db.Column(db.String(240))
+    seeking_venue = db.Column(db.Boolean)
+    seeking_description = db.Column(db.String(500))
+
+
+class Venue(db.Model):
+    __tablename__ = "venue"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    city = db.Column(db.String(120))
+    state = db.Column(db.String(120))
+    address = db.Column(db.String(120))
+    phone = db.Column(db.String(120))
+    image_link = db.Column(db.String(500))
+    genres = db.Column(db.String(250))
     facebook_link = db.Column(db.String(120))
+    website_link = db.Column(db.String(500))
+    seeking_talent = db.Column(db.Boolean)
+    seeking_description = db.Column(db.String(500))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+
+class Show(db.Model):
+    __tablename__ = "show"
+
+    id = db.Column(db.Integer, primary_key=True)
+    start_time = db.Column(db.DateTime)
+    artist_id = db.Column(db.Integer, db.ForeignKey("artist.id"), nullable=False)
+    artist = db.relationship("Artist", backref="artist")
+    venue_id = db.Column(db.Integer, db.ForeignKey("venue.id"), nullable=False)
+    venue = db.relationship("Venue", backref="venue")
 
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-
-# ----------------------------------------------------------------------------#
-# Filters.
-# ----------------------------------------------------------------------------#
+# ====================
+#  Filters
+# ====================
 
 
 def format_datetime(value, format="medium"):
@@ -77,9 +89,9 @@ def format_datetime(value, format="medium"):
 
 app.jinja_env.filters["datetime"] = format_datetime
 
-# ----------------------------------------------------------------------------#
-# Controllers.
-# ----------------------------------------------------------------------------#
+# ====================
+#  Controllers
+# ====================
 
 
 @app.route("/")
@@ -87,8 +99,9 @@ def index():
     return render_template("pages/home.html")
 
 
+# ====================
 #  Venues
-#  ----------------------------------------------------------------
+# ====================
 
 
 @app.route("/venues")
@@ -242,8 +255,9 @@ def show_venue(venue_id):
     return render_template("pages/show_venue.html", venue=data)
 
 
+# ====================
 #  Create Venue
-#  ----------------------------------------------------------------
+# ====================
 
 
 @app.route("/venues/create", methods=["GET"])
@@ -275,8 +289,9 @@ def delete_venue(venue_id):
     return None
 
 
+# ====================
 #  Artists
-#  ----------------------------------------------------------------
+# ====================
 @app.route("/artists")
 def artists():
     # TODO: replace with real data returned from querying the database
@@ -406,8 +421,9 @@ def show_artist(artist_id):
     return render_template("pages/show_artist.html", artist=data)
 
 
+# ====================
 #  Update
-#  ----------------------------------------------------------------
+# ====================
 @app.route("/artists/<int:artist_id>/edit", methods=["GET"])
 def edit_artist(artist_id):
     form = ArtistForm()
@@ -464,8 +480,9 @@ def edit_venue_submission(venue_id):
     return redirect(url_for("show_venue", venue_id=venue_id))
 
 
+# ====================
 #  Create Artist
-#  ----------------------------------------------------------------
+# ====================
 
 
 @app.route("/artists/create", methods=["GET"])
@@ -487,8 +504,9 @@ def create_artist_submission():
     return render_template("pages/home.html")
 
 
+# ====================
 #  Shows
-#  ----------------------------------------------------------------
+# ====================
 
 
 @app.route("/shows")
@@ -580,17 +598,6 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info("errors")
 
-# ----------------------------------------------------------------------------#
-# Launch.
-# ----------------------------------------------------------------------------#
 
-# Default port:
 if __name__ == "__main__":
     app.run()
-
-# Or specify port manually:
-"""
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-"""
