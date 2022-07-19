@@ -14,7 +14,7 @@ identify==2.5.1
 importlib-metadata==4.12.0
 importlib-resources==5.8.0
 itsdangerous==2.1.2
-Jinja2==3.0.3
+Jinja2==3.0.3a
 Mako==1.2.1
 MarkupSafe==2.1.1
 nodeenv==1.7.0
