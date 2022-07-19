@@ -214,12 +214,28 @@ def create_venue_submission():
 
 @app.route("/venues/<venue_id>", methods=["DELETE"])
 def delete_venue(venue_id):
-    # TODO: Complete this endpoint for taking a venue_id, and using
-    # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
 
-    # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-    # clicking that button delete it from the db then redirect the user to the homepage
-    return None
+    error_occured = False
+    try:
+        Venue.query.filter_by(id=venue_id).delete()
+        db.session.commit()
+    except:
+        db.session.rollback()
+    finally:
+        db.session.close()
+
+    if not error_occured:
+        flash(
+            f"Venue with ID {venue_id} has been deleted.",
+            category="info",
+        )
+    else:
+        flash(
+            f"An error occured: Artist with ID {venue_id} could not be deleted.",
+            category="info",
+        )
+
+    return render_template(url_for(venues))
 
 
 @app.route("/venues/<int:venue_id>/edit", methods=["GET"])
@@ -257,7 +273,7 @@ def edit_venue_submission(venue_id):
 
 @app.route("/artists")
 def artists():
-    data = Artist.query.all()
+    data = Artist.query.order_by(Artist.name).all()
     return render_template("pages/artists.html", artists=data)
 
 
@@ -277,7 +293,7 @@ def show_artist(artist_id):
                 "venue_id": venue.id,
                 "venue_name": venue.name,
                 "venue_image_link": venue.image_link,
-                "start_time": show.start_time,
+                "start_time": show.start_time.strftime("%Y-%m-%d %H:%M:%S"),
             }
         )
 
@@ -290,7 +306,7 @@ def show_artist(artist_id):
                 "venue_id": venue.id,
                 "venue_name": venue.name,
                 "venue_image_link": venue.image_link,
-                "start_time": show.start_time,
+                "start_time": show.start_time.strftime("%Y-%m-%d %H:%M:%S"),
             }
         )
 
@@ -344,34 +360,6 @@ def search_artists():
     )
 
 
-@app.route("/artists/<int:artist_id>/edit", methods=["GET"])
-def edit_artist(artist_id):
-    form = ArtistForm()
-    artist = {
-        "id": 4,
-        "name": "Guns N Petals",
-        "genres": ["Rock n Roll"],
-        "city": "San Francisco",
-        "state": "CA",
-        "phone": "326-123-5000",
-        "website": "https://www.gunsnpetalsband.com",
-        "facebook_link": "https://www.facebook.com/GunsNPetals",
-        "seeking_venue": True,
-        "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-        "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80",
-    }
-    # TODO: populate form with fields from artist with ID <artist_id>
-    return render_template("forms/edit_artist.html", form=form, artist=artist)
-
-
-@app.route("/artists/<int:artist_id>/edit", methods=["POST"])
-def edit_artist_submission(artist_id):
-    # TODO: take values from the form submitted, and update existing
-    # artist record with ID <artist_id> using the new attributes
-
-    return redirect(url_for("show_artist", artist_id=artist_id))
-
-
 @app.route("/artists/create", methods=["GET"])
 def create_artist_form():
     form = ArtistForm()
@@ -406,6 +394,59 @@ def create_artist_submission():
     return render_template("pages/home.html")
 
 
+@app.route("/artists/<int:artist_id>/edit", methods=["GET"])
+def edit_artist(artist_id):
+    form = ArtistForm()
+    artist = {
+        "id": 4,
+        "name": "Guns N Petals",
+        "genres": ["Rock n Roll"],
+        "city": "San Francisco",
+        "state": "CA",
+        "phone": "326-123-5000",
+        "website": "https://www.gunsnpetalsband.com",
+        "facebook_link": "https://www.facebook.com/GunsNPetals",
+        "seeking_venue": True,
+        "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
+        "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80",
+    }
+    # TODO: populate form with fields from artist with ID <artist_id>
+    return render_template("forms/edit_artist.html", form=form, artist=artist)
+
+
+@app.route("/artists/<int:artist_id>/edit", methods=["POST"])
+def edit_artist_submission(artist_id):
+    # TODO: take values from the form submitted, and update existing
+    # artist record with ID <artist_id> using the new attributes
+
+    return redirect(url_for("show_artist", artist_id=artist_id))
+
+
+@app.route("/artists/<int:artist_id>", methods=["DELETE"])
+def delete_artist(artist_id):
+    error_occured = False
+    try:
+        Artist.query.filter_by(id=artist_id).delete()
+        db.session.commit()
+    except:
+        db.session.rollback()
+    finally:
+        db.session.close()
+
+    if not error_occured:
+        flash(
+            f"Artist with ID {artist_id} has been deleted.",
+            category="info",
+        )
+    else:
+        flash(
+            f"An error occured: Artist with ID {artist_id} could not be deleted.",
+            category="info",
+        )
+
+    return render_template(url_for(artists))
+
+
 # ====================
 #  Shows
 # ====================
@@ -414,7 +455,7 @@ def create_artist_submission():
 @app.route("/shows")
 def shows():
 
-    shows = Show.query.all()
+    shows = Show.query.order_by(Show.start_time).all()
 
     data = []
     for show in shows:
