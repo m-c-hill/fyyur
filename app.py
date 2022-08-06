@@ -52,7 +52,20 @@ app.jinja_env.filters["datetime"] = format_datetime
 
 @app.route("/")
 def index():
-    return render_template("pages/home.html")
+    """
+    Home page for Fyyur application, displaying recent listings
+    """
+    # Retrieve recently listed artists, venues and shows
+    recent_artists = _retrieve_recent_artists()
+    recent_venues = _retrieve_recent_venues()
+    recent_shows = _retrieve_recent_shows()
+
+    return render_template(
+        "pages/home.html",
+        artists=recent_artists,
+        venues=recent_venues,
+        shows=recent_shows,
+    )
 
 
 # =====================
@@ -614,6 +627,32 @@ def create_show_submission():
         db.session.close()
 
     return render_template("pages/home.html")
+
+
+# ===================
+#  Utility functions
+# ===================
+
+
+def _retrieve_recent_artists():
+    """Retrieve newly listed artists in the last 30 days"""
+    return Artist.query.filter(
+        Artist.date_created >= datetime.now() - datetime.timedelta(30)
+    ).all()
+
+
+def _retrieve_recent_shows():
+    """Retrieve newly listed shows in the last 30 days"""
+    return Show.query.filter(
+        Artist.date_created >= datetime.now() - datetime.timedelta(30)
+    ).all()
+
+
+def _retrieve_recent_venues():
+    """Retrieve newly listed venues in the last 30 days"""
+    return Artist.query.filter(
+        Artist.date_created >= datetime.now() - datetime.timedelta(30)
+    ).all()
 
 
 # ============================
