@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from logging import FileHandler, Formatter
 
 import babel
@@ -637,21 +637,21 @@ def create_show_submission():
 def _retrieve_recent_artists():
     """Retrieve newly listed artists in the last 30 days"""
     return Artist.query.filter(
-        Artist.date_created >= datetime.now() - datetime.timedelta(30)
+        Artist.date_created >= datetime.now() - timedelta(30)
     ).all()
 
 
 def _retrieve_recent_shows():
     """Retrieve newly listed shows in the last 30 days"""
     return Show.query.filter(
-        Artist.date_created >= datetime.now() - datetime.timedelta(30)
+        Artist.date_created >= datetime.now() - timedelta(30)
     ).all()
 
 
 def _retrieve_recent_venues():
     """Retrieve newly listed venues in the last 30 days"""
     return Artist.query.filter(
-        Artist.date_created >= datetime.now() - datetime.timedelta(30)
+        Artist.date_created >= datetime.now() - timedelta(30)
     ).all()
 
 
