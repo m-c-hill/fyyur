@@ -83,26 +83,30 @@ With the server running, to access the application go to: [http://localhost:5000
 Here are a few brief video demonstrations of the key features of the Fyyur app:
 
 ### View Artists, Venues and Shows
-|
+https://user-images.githubusercontent.com/74383191/183263403-14f2c131-8348-4ef0-8c1e-279917260793.mp4|
 |:--:|
 | *Browse artists, venues and their upcoming shows.* |
 
 ### Update a Venue
-|
+
+https://user-images.githubusercontent.com/74383191/183263406-75aa2770-e8e5-482c-93c4-1ffd28f8b5b3.mp4|
 |:--:|
 | *The Dueling Pianos Bar is now looking for new talent and needs to update their listing.* |
 
 ### Create a New Artist
-|
+
+https://user-images.githubusercontent.com/74383191/183263409-9dd39819-fa7c-4082-9e26-aad268511e12.mp4|
 |:--:|
 | *List a new artist, Behemoth, looking to book shows.* |
 
 ### Book a Show
-|
+
+https://user-images.githubusercontent.com/74383191/183263413-ff46594d-f0ce-46bf-8855-09747c5ae630.mp4|
 |:--:|
 | *Create a new show with the newly listed band.* |
 
 ### Delete an Old Venue
-|
+
+https://user-images.githubusercontent.com/74383191/183263417-ec28d698-b4c4-48e2-98d5-2a6f26e64037.mp4|
 |:--:|
 | *The venue 'Park Square Live Music & Coffee' has closed down and needs to be removed from the site, including all associated shows.* |
