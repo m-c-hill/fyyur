@@ -637,22 +637,35 @@ def create_show_submission():
 def _retrieve_recent_artists():
     """Retrieve newly listed artists in the last 30 days"""
     return Artist.query.filter(
-        Artist.date_created >= datetime.now() - timedelta(30)
-    ).all()
-
-
-def _retrieve_recent_shows():
-    """Retrieve newly listed shows in the last 30 days"""
-    return Show.query.filter(
-        Artist.date_created >= datetime.now() - timedelta(30)
+        Artist.date_listed >= datetime.now() - timedelta(30)
     ).all()
 
 
 def _retrieve_recent_venues():
     """Retrieve newly listed venues in the last 30 days"""
-    return Artist.query.filter(
-        Artist.date_created >= datetime.now() - timedelta(30)
-    ).all()
+    return Venue.query.filter(Venue.date_listed >= datetime.now() - timedelta(30)).all()
+
+
+def _retrieve_recent_shows():
+    """Retrieve newly listed shows in the last 30 days"""
+    shows = Show.query.filter(Show.date_listed >= datetime.now() - timedelta(30)).all()
+
+    data = []
+    for show in shows:
+        artist = Artist.query.filter_by(id=show.artist_id).one()
+        venue = Venue.query.filter_by(id=show.venue_id).one()
+        data.append(
+            {
+                "id": show.id,
+                "artist_id": show.artist_id,
+                "artist_name": artist.name,
+                "venue_id": show.venue_id,
+                "venue_name": venue.name,
+                "start_time": show.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        )
+
+    return data
 
 
 # ============================

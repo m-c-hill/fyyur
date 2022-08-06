@@ -26,7 +26,10 @@ content %}
         ><button class="btn btn-default btn-lg">Post a show</button></a
       >
     </h3>
-    <p class="lead">Recently listed</p>
+
+    <p class="lead">Recently listed in last 30 days</p>
+
+    <h4>Artists</h4>
     <ul class="items">
       {% for artist in artists %}
       <li>
@@ -34,6 +37,39 @@ content %}
           <i class="fas fa-users"></i>
           <div class="item">
             <h5>{{ artist.name }}</h5>
+          </div>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <h4>Venues</h4>
+    <ul class="items">
+      {%for venue in venues %}
+      <li>
+        <a href="/venues/{{ venue.id }}">
+          <i class="fas fa-music"></i>
+          <div class="item">
+            <h5>{{ venue.name }}</h5>
+          </div>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <h4>Shows</h4>
+    <ul class="items">
+      {%for show in shows %}
+      <li>
+        <a href="/artists/{{ show.artist_id }}">
+          <i class="fas fa-guitar"></i>
+          <div class="item">
+            <h5>
+              <b>{{ show.artist_name }}</b> @ {{ show.venue_name }}
+              <i style="color: blue">
+                - {{ show.start_time|datetime('full') }}
+              </i>
+            </h5>
           </div>
         </a>
       </li>

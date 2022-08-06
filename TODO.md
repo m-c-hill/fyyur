@@ -1,5 +1,3 @@
-# TODO
-
 ### Core Features
 - Update README with animations and feature descriptions
 
