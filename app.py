@@ -226,6 +226,10 @@ def create_venue_submission():
         if not isinstance(venue.genres, list):
             venue.genres = [venue.genres]
 
+        venue.seeking_talent = (
+            True if request.form.get("seeking_talent", "n") == "y" else False
+        )
+
         db.session.add(venue)
         db.session.commit()
         flash(f"Venue {request.form['name']} was successfully listed!", category="info")
@@ -238,7 +242,7 @@ def create_venue_submission():
     finally:
         db.session.close()
 
-    return render_template("pages/home.html")
+    return redirect(url_for("index"))
 
 
 @app.route("/venues/<int:venue_id>/edit", methods=["GET"])
@@ -460,6 +464,10 @@ def create_artist_submission():
         if not isinstance(artist.genres, list):
             artist.genres = [artist.genres]
 
+        artist.seeking_venue = (
+            True if request.form.get("seeking_venue", "n") == "y" else False
+        )
+
         db.session.add(artist)
         db.session.commit()
         flash(
@@ -475,7 +483,7 @@ def create_artist_submission():
     finally:
         db.session.close()
 
-    return render_template("pages/home.html")
+    return redirect(url_for("index"))
 
 
 @app.route("/artists/<int:artist_id>/edit", methods=["GET"])
@@ -627,7 +635,7 @@ def create_show_submission():
     finally:
         db.session.close()
 
-    return render_template("pages/home.html")
+    return redirect(url_for("index"))
 
 
 # ===================
