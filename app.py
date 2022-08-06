@@ -607,6 +607,7 @@ def create_shows():
     Render the create new show form.
     """
     form = ShowForm()
+
     return render_template("forms/new_show.html", form=form)
 
 

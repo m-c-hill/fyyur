@@ -5,8 +5,9 @@ Fyyur
 
 Fyyur is a musical venue and artist booking site that facilitates the discovery and bookings of shows between local performing artists and venues. This site lets you list new artists and venues, discover them, and list shows with artists as a venue owner.
 
-![image](https://user-images.githubusercontent.com/74383191/183261966-cb671621-f439-4c7e-b28a-3a5e1cc2df39.png)
-<figcaption>Test</figcaption>
+![image](https://user-images.githubusercontent.com/74383191/183261966-cb671621-f439-4c7e-b28a-3a5e1cc2df39.png)|
+|:--:|
+| *Fyyur homepage* |
 
 The project involved building out the data models to power the API endpoints for the Fyyur site by connecting to a PostgreSQL database for storing, querying, and creating information about artists and venues on Fyyur.
 
@@ -79,3 +80,29 @@ With the server running, to access the application go to: [http://localhost:5000
 
 ## Guide
 
+Here are a few brief video demonstrations of the key features of the Fyyur app:
+
+### View Artists, Venues and Shows
+|
+|:--:|
+| *Browse artists, venues and their upcoming shows.* |
+
+### Update a Venue
+|
+|:--:|
+| *The Dueling Pianos Bar is now looking for new talent and needs to update their listing.* |
+
+### Create a New Artist
+|
+|:--:|
+| *List a new artist, Behemoth, looking to book shows.* |
+
+### Book a Show
+|
+|:--:|
+| *Create a new show with the newly listed band.* |
+
+### Delete an Old Venue
+|
+|:--:|
+| *The venue 'Park Square Live Music & Coffee' has closed down and needs to be removed from the site, including all associated shows.* |
