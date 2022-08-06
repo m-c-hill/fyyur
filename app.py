@@ -1,17 +1,16 @@
-import json
-import dateutil.parser
-import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
-from flask_moment import Moment
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 import logging
-from logging import Formatter, FileHandler
-from flask_wtf import Form
-from pkg_resources import require
-from forms import ShowForm, ArtistForm, VenueForm
-from sqlalchemy import func
 from datetime import datetime
+from logging import FileHandler, Formatter
+
+import babel
+import dateutil.parser
+from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_migrate import Migrate
+from flask_moment import Moment
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+
+from forms import ArtistForm, ShowForm, VenueForm
 
 
 # ====================
@@ -23,7 +22,7 @@ app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object("config")
 db = SQLAlchemy(app)
-from models import Artist, Venue, Show
+from models import Artist, Show, Venue
 
 db.create_all()
 migrate = Migrate(app, db)
@@ -47,7 +46,7 @@ app.jinja_env.filters["datetime"] = format_datetime
 
 
 # ====================
-#  Controllers
+#  Controllers: Home
 # ====================
 
 
@@ -57,18 +56,20 @@ def index():
 
 
 # ====================
-#  Venues
+#  Controllers:
 # ====================
 
 
 @app.route("/venues")
 def venues():
-    data = []
+    # Retrieve a complete list of cities
     all_cities = Venue.query.with_entities(
         func.count(Venue.id), Venue.city, Venue.state
     ).group_by(Venue.city, Venue.state)
 
+    data = []
     for city in all_cities:
+        # Retrieve data for all venues for each city in the city selection
         current_city = city[1]
         current_state = city[2]
         venues_in_city = (
@@ -98,14 +99,13 @@ def venues():
     return render_template("pages/venues.html", areas=data)
 
 
+# TODO: Fix error with venues/3
 @app.route("/venues/<int:venue_id>")
 def show_venue(venue_id):
-
     venue = Venue.query.filter_by(id=venue_id).one()
-
     all_shows = Show.query.filter_by(venue_id=venue_id)
-
     past_shows_query = all_shows.filter(Show.start_time < datetime.utcnow()).all()
+
     past_shows = []
     for show in past_shows_query:
         artist = Artist.query.filter_by(id=show.artist_id).one()
@@ -127,7 +127,7 @@ def show_venue(venue_id):
                 "artist_id": artist.id,
                 "artist_name": artist.name,
                 "artist_image_link": artist.image_link,
-                "start_time": show.start_time,
+                "start_time": show.start_time.strftime("%Y-%m-%d %H:%M:%S"),
             }
         )
 
@@ -144,7 +144,7 @@ def show_venue(venue_id):
         "seeking_talent": venue.seeking_talent,
         "seeking_description": venue.seeking_description,
         "image_link": venue.image_link,
-        "past_show": past_shows,
+        "past_shows": past_shows,
         "upcoming_shows": upcoming_shows,
         "past_shows_count": len(past_shows),
         "upcoming_shows_count": len(upcoming_shows),

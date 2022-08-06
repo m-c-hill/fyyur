@@ -14,7 +14,3 @@
 
 - Add artist availability, stop shows from being booked when artist not available
 - Show recently listed artists and venues on the home page (migration to add creation date)
-
-### Testing
-
-- Implement full testing incl front end testing: https://www.pythonforengineers.com/testing-our-frontend/

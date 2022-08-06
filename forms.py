@@ -1,18 +1,20 @@
 from datetime import datetime
+
 from flask_wtf import Form
 from wtforms import (
-    StringField,
+    BooleanField,
+    DateTimeField,
     SelectField,
     SelectMultipleField,
-    DateTimeField,
-    BooleanField,
+    StringField,
 )
-from wtforms.validators import DataRequired, AnyOf, URL
+from wtforms.validators import URL, DataRequired, Length, Regexp, Optional
+
+invalid_url_message = "This is not a valid link, make sure you enter the entire URL"
 
 
 class ArtistForm(Form):
     name = StringField("name", validators=[DataRequired()])
-    # TODO: Check for extra validators (length etc.)
     city = StringField("city", validators=[DataRequired()])
     state = SelectField(
         "state",
@@ -72,10 +74,20 @@ class ArtistForm(Form):
         ],
     )
     phone = StringField(
-        # TODO: implement validation logic for state
-        "phone"
+        "phone",
+        validators=[
+            DataRequired(),
+            Length(min=10, max=12),
+            Regexp(regex="^[+-]?[0-9]$"),
+        ],
     )
-    image_link = StringField("image_link")
+    image_link = StringField(
+        "image_link",
+        validators=[
+            Optional(),
+            URL(message=invalid_url_message),
+        ],
+    )
     genres = SelectMultipleField(
         "genres",
         validators=[DataRequired()],
@@ -102,15 +114,20 @@ class ArtistForm(Form):
         ],
     )
     facebook_link = StringField(
-        # TODO: implement enum restriction
         "facebook_link",
-        validators=[URL()],
+        validators=[
+            Optional(),
+            URL(message=invalid_url_message),
+        ],
     )
-
-    website_link = StringField("website_link")
-
+    website_link = StringField(
+        "website_link",
+        validators=[
+            Optional(),
+            URL(message=invalid_url_message),
+        ],
+    )
     seeking_venue = BooleanField("seeking_venue")
-
     seeking_description = StringField("seeking_description")
 
 
@@ -176,9 +193,14 @@ class VenueForm(Form):
     )
     address = StringField("address", validators=[DataRequired()])
     phone = StringField("phone")
-    image_link = StringField("image_link")
+    image_link = StringField(
+        "image_link",
+        validators=[
+            Optional(),
+            URL(message=invalid_url_message),
+        ],
+    )
     genres = SelectMultipleField(
-        # TODO implement enum restriction
         "genres",
         validators=[DataRequired()],
         choices=[
@@ -203,8 +225,12 @@ class VenueForm(Form):
             ("Other", "Other"),
         ],
     )
-    facebook_link = StringField("facebook_link", validators=[URL()])
-    website_link = StringField("website_link")
+    facebook_link = StringField(
+        "facebook_link", validators=[Optional(), URL(message=invalid_url_message)]
+    )
+    website_link = StringField(
+        "website_link", validators=[Optional(), URL(message=invalid_url_message)]
+    )
     seeking_talent = BooleanField("seeking_talent")
     seeking_description = StringField("seeking_description")
 
