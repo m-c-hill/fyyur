@@ -8,7 +8,7 @@ from wtforms import (
     SelectMultipleField,
     StringField,
 )
-from wtforms.validators import URL, DataRequired, Length, Regexp, Optional
+from wtforms.validators import URL, DataRequired, Length, Optional, Regexp
 
 invalid_url_message = "This is not a valid link, make sure you enter the entire URL"
 
@@ -77,7 +77,7 @@ class ArtistForm(Form):
         "phone",
         validators=[
             DataRequired(),
-            Length(min=10, max=12),
+            Length(min=9, max=13),
             Regexp(regex="^[+-]?[0-9]$"),
         ],
     )
@@ -192,7 +192,14 @@ class VenueForm(Form):
         ],
     )
     address = StringField("address", validators=[DataRequired()])
-    phone = StringField("phone")
+    phone = StringField(
+        "phone",
+        validators=[
+            DataRequired(),
+            Length(min=9, max=13),
+            Regexp(regex="^[+-]?[0-9]$"),
+        ],
+    )
     image_link = StringField(
         "image_link",
         validators=[
