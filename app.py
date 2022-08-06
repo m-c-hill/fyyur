@@ -21,10 +21,10 @@ from forms import ArtistForm, ShowForm, VenueForm
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object("config")
-db = SQLAlchemy(app)
-from models import Artist, Show, Venue
 
-db.create_all()
+from models import db, Artist, Show, Venue
+
+db.init_app(app)
 migrate = Migrate(app, db)
 
 
@@ -120,11 +120,15 @@ def show_venue(venue_id):
     Retrieve all shows for a given venue, past and present, and their associated artist
     information.
     """
-    venue = Venue.query.filter_by(id=venue_id).one()
-    all_shows = Show.query.filter_by(venue_id=venue_id)
 
     # Retrieve all past show information for the selected venue
-    past_shows_query = all_shows.filter(Show.start_time < datetime.utcnow()).all()
+    past_shows_query = (
+        db.session.query(Show)
+        .join(Venue)
+        .filter(Show.venue_id == venue_id)
+        .filter(Show.start_time < datetime.now())
+        .all()
+    )
     past_shows = []
     for show in past_shows_query:
         artist = Artist.query.filter_by(id=show.artist_id).one()
@@ -138,7 +142,13 @@ def show_venue(venue_id):
         )
 
     # Retrieve all upcoming show information for the selected venue
-    upcoming_shows_query = all_shows.filter(Show.start_time >= datetime.utcnow()).all()
+    upcoming_shows_query = (
+        db.session.query(Show)
+        .join(Venue)
+        .filter(Show.venue_id == venue_id)
+        .filter(Show.start_time >= datetime.now())
+        .all()
+    )
     upcoming_shows = []
     for show in upcoming_shows_query:
         artist = Artist.query.filter_by(id=show.artist_id).one()
@@ -150,6 +160,8 @@ def show_venue(venue_id):
                 "start_time": show.start_time.strftime("%Y-%m-%d %H:%M:%S"),
             }
         )
+
+    venue = Venue.query.filter_by(id=venue_id).one()
 
     data = {
         "id": venue.id,
@@ -360,11 +372,13 @@ def show_artist(artist_id):
     Retrieve all shows for a given artist, past and present, and their associated venue
     information.
     """
-    artist = Artist.query.filter_by(id=artist_id).one()
-
-    all_shows = Show.query.filter_by(artist_id=artist_id)
-
-    past_shows_query = all_shows.filter(Show.start_time < datetime.utcnow()).all()
+    past_shows_query = (
+        db.session.query(Show)
+        .join(Venue)
+        .filter(Show.artist_id == artist_id)
+        .filter(Show.start_time < datetime.now())
+        .all()
+    )
     past_shows = []
     for show in past_shows_query:
         venue = Venue.query.filter_by(id=show.venue_id).one()
@@ -377,7 +391,13 @@ def show_artist(artist_id):
             }
         )
 
-    upcoming_shows_query = all_shows.filter(Show.start_time >= datetime.utcnow()).all()
+    upcoming_shows_query = (
+        db.session.query(Show)
+        .join(Venue)
+        .filter(Show.artist_id == artist_id)
+        .filter(Show.start_time >= datetime.now())
+        .all()
+    )
     upcoming_shows = []
     for show in upcoming_shows_query:
         venue = Venue.query.filter_by(id=show.venue_id).one()
@@ -390,6 +410,7 @@ def show_artist(artist_id):
             }
         )
 
+    artist = Artist.query.filter_by(id=artist_id).one()
     artist_data = {
         "id": artist.id,
         "name": artist.name,

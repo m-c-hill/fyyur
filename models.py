@@ -1,5 +1,8 @@
-from app import db
+import sqlite3
 from sqlalchemy.sql import func
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 
 class Artist(db.Model):
